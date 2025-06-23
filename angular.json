@@ -3,5 +3,94 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "tools": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/tools",
+      "sourceRoot": "projects/tools/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/tools/src/main.ts",
+            "tsConfig": "projects/tools/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "assets/**/*",
+              {
+                "glob": "**/*",
+                "input": "projects/tools/public"
+              }
+            ],
+            "styles": [
+              "projects/tools/src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "tools:build:production"
+            },
+            "development": {
+              "buildTarget": "tools:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/tools/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "assets/**/*",
+              {
+                "glob": "**/*",
+                "input": "projects/tools/public"
+              }
+            ],
+            "styles": [
+              "projects/tools/src/styles.scss"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "59a9b962-57fb-480e-a287-0a98ac9a6017"
   }
 }
