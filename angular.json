@@ -7,7 +7,22 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "standalone": true,
+          "style": "scss",
+          "inlineTemplate": true,
+          "skipTests": true,
+          "displayBlock": false
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "standalone": true,
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "standalone": true,
+          "skipTests": true
         }
       },
       "root": "projects/tools",
