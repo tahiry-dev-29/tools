@@ -21,7 +21,7 @@
             "tsConfig": "projects/tools/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "assets/**/*",
+              "projects/tools/src/assets/**/*",
               {
                 "glob": "**/*",
                 "input": "projects/tools/public"
@@ -76,7 +76,7 @@
             "tsConfig": "projects/tools/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "assets/**/*",
+              "rojects/tools/src/assets/**/*",
               {
                 "glob": "**/*",
                 "input": "projects/tools/public"
