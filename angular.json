@@ -54,7 +54,10 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              {
+                "input": "node_modules/material-icons/iconfont/material-icons.css"
+              }
             ]
           },
           "configurations": {
@@ -107,7 +110,10 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              {
+                "input": "node_modules/material-icons/iconfont/material-icons.css"
+              }
             ]
           }
         },
