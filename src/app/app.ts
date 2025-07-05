@@ -11,7 +11,7 @@ import {NavMenu} from './shared/components/nav-menu';
     <div class="pattern fixed inset-0 -z-10"></div>
 
     <!-- Main content container, allows scrolling -->
-    <div class="relative z-0 min-h-screen mt-20">
+    <div class="relative z-0 min-h-screen mt-30">
       <app-nav-menu/>
       <router-outlet/>
     </div>

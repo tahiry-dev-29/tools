@@ -1,15 +1,14 @@
 import { Component, input, inject } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { Project } from '../../core/models/project';
 
 @Component({
   selector: 'app-card',
-  standalone: true,
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [NgOptimizedImage],
   template: `
     <div class="min-w-72 bg-white/10 backdrop-blur-xl rounded-xl shadow-2xl overflow-hidden
-                transform transition-all duration-300 hover:scale-105 hover:shadow-3xl
+                transform transition-all duration-150 hover:scale-105 hover:shadow-3xl
                 border border-white/20 hover:border-purple-500">
       <img
         [ngSrc]="project().imageUrl"

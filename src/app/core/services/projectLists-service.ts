@@ -4,25 +4,26 @@ import {Project} from '../models/project';
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectLists {
+export class ProjectListsService {
 
   private _projects = signal<Project[]>([
     {
       id: '1',
       title: 'Password Generator',
-      description: 'A password generator application to help you. lorem ipsum dolor sit amet.',
-      imageUrl: 'https://placehold.co/400x250/1a202c/e2e8f0?text=E-commerce',
+      description: 'A secure and customizable password generator application designed to help users create strong, unique passwords for their online accounts. It supports various options like length, character types (uppercase, lowercase, numbers, symbols), and exclusion of ambiguous characters.',
+      imageUrl: 'https://placehold.co/400x250/1a202c/e2e8f0?text=Password%20Generator',
       path: '/projects/password-generator',
     },{
       id: '2',
-      title: 'Password Generator',
-      description: 'A password generator application to help you. lorem ipsum dolor sit amet.',
-      imageUrl: 'https://placehold.co/400x250/1a202c/e2e8f0?text=E-commerce',
-      path: '/projects/password-generator',
+      title: 'Markdown Editor',
+      description: 'A real-time Markdown editor that allows users to write and preview Markdown syntax simultaneously. It supports common Markdown features, provides syntax highlighting, and enables easy export of content.',
+      imageUrl: 'https://placehold.co/400x250/1a202c/e2e8f0?text=Markdown%20Editor',
+      path: '/projects/markdown-editor',
     },
   ])
 
   get projects() {
     return this._projects.asReadonly();
   }
+
 }

@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, signal, viewChild, inject, effect } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
-import { ProjectLists } from '../../core/services/project-lists';
+import { ProjectListsService } from '../../core/services/projectLists-service';
 import { ScrollHide } from '../directives/scroll-hide';
 import { Dialog } from './dialog';
 import {Project} from '../../core/models/project';
@@ -13,7 +13,7 @@ import {Project} from '../../core/models/project';
     <nav
       appScrollHide #scrollHide="appScrollHide"
       class="fixed top-0 left-0 right-0 z-50
-             bg-gray-900/70 backdrop-blur-md text-white p-4 shadow-xl
+             bg-gray-900/70 backdrop-blur-md text-white p-4 shadow-xl border-b border-gray-800
              flex items-center justify-between
              transform transition-transform duration-300 ease-in-out"
       [class.-translate-y-full]="!scrollHide.visible()"
@@ -21,12 +21,12 @@ import {Project} from '../../core/models/project';
     >
       <div class="flex items-center">
         <a routerLink="/home" class="text-2xl font-extrabold text-indigo-400 hover:text-indigo-300 transition-colors duration-200">
-          Your Logo
+          Logo
         </a>
       </div>
 
-      <button (click)="toggleSearchDialog()" class="flex justify-between items-center gap-7 cursor-pointer p-2 bg-white/25 backdrop-blur-2xl rounded-2xl hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 relative overflow-hidden group" aria-label="Toggle search">
-        <div class="text-md text-gray-300 font-bold bg-gray-400/90 p-1 rounded-lg">
+      <button (click)="toggleSearchDialog()" class="flex justify-between items-center gap-2 sm:gap-4 cursor-pointer p-2 bg-white/25 backdrop-blur-2xl rounded-2xl hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 relative overflow-hidden group" aria-label="Toggle search">
+        <div class="text-md text-gray-300 font-bold bg-gray-400/90 p-1 rounded-lg hidden sm:block">
           ⌘K
         </div>
         <span class="material-icons">
@@ -84,7 +84,7 @@ export class NavMenu {
 
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
 
-  private projectService = inject(ProjectLists);
+  private projectService = inject(ProjectListsService);
   private router = inject(Router);
 
   filteredProjects = signal<Project[]>([]);

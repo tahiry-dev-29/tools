@@ -1,10 +1,9 @@
 import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-dialog',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     @if (isOpen()) {
       <div
