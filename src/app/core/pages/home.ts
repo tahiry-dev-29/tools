@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 
-import { ProjectListsService } from '../../core/services/projectLists-service';
+import { ProjectListsService } from '../services/projectLists-service';
 import { Card } from '../../shared/components/card';
 
 @Component({

@@ -85,7 +85,6 @@ export class NavMenu {
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
 
   private projectService = inject(ProjectListsService);
-  private router = inject(Router);
 
   filteredProjects = signal<Project[]>([]);
   private scrollTimeout: any;
