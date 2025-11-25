@@ -8,12 +8,12 @@ import { FileNode } from '../../../core/models/file-node.model';
   standalone: true,
   imports: [FileItemComponent],
   template: `
-    <div class="h-full flex flex-col bg-gray-950 border-r border-gray-800">
-      <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-        <span class="font-bold text-gray-400 text-sm uppercase tracking-wider">Explorer</span>
+    <div class="h-full flex flex-col bg-[var(--bg-secondary)] border-r border-[var(--border-color)]">
+      <div class="p-4 border-b border-[var(--border-color)] flex justify-between items-center">
+        <span class="font-bold text-[var(--text-secondary)] text-sm uppercase tracking-wider">Explorer</span>
         <button 
           (click)="openDirectory()" 
-          class="p-1 hover:bg-gray-800 rounded text-gray-400 hover:text-white transition-colors"
+          class="p-1 hover:bg-[var(--bg-tertiary)] rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           title="Open Folder">
           <span class="material-icons text-sm">create_new_folder</span>
         </button>
@@ -21,9 +21,9 @@ import { FileNode } from '../../../core/models/file-node.model';
       
       <div class="flex-1 overflow-y-auto p-2">
         @if (fileTree().length === 0) {
-          <div class="text-center mt-10 text-gray-600 text-sm">
+          <div class="text-center mt-10 text-[var(--text-secondary)] text-sm">
             <p>No folder opened</p>
-            <button (click)="openDirectory()" class="text-indigo-400 hover:underline mt-2">Open...</button>
+            <button (click)="openDirectory()" class="text-[var(--accent-color)] hover:underline mt-2">Open...</button>
           </div>
         }
         
@@ -35,7 +35,7 @@ import { FileNode } from '../../../core/models/file-node.model';
         }
       </div>
     </div>
-  `
+  `,
 })
 export class FileTreeComponent {
   private fileSystemService = inject(FileSystemService);

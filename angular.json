@@ -52,14 +52,33 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/monaco-editor/min/vs",
+                "output": "vs"
               }
             ],
             "styles": [
               "src/styles.css",
               {
                 "input": "node_modules/material-icons/iconfont/material-icons.css"
-              }
-            ]
+              },
+              "node_modules/prismjs/themes/prism-okaidia.css"
+            ],
+            "scripts": [
+              "node_modules/prismjs/prism.js",
+              "node_modules/prismjs/components/prism-typescript.js",
+              "node_modules/prismjs/components/prism-javascript.js",
+              "node_modules/prismjs/components/prism-css.js",
+              "node_modules/prismjs/components/prism-markup.js",
+              "node_modules/prismjs/components/prism-bash.js",
+              "node_modules/prismjs/components/prism-json.js",
+              "node_modules/prismjs/components/prism-markdown.js"
+            ],
+            "loader": {
+              ".ttf": "file"
+            }
           },
           "configurations": {
             "production": {
