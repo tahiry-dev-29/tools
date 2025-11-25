@@ -1,7 +1,7 @@
 import {Routes} from '@angular/router';
-import {MarkdownEditorComponents} from './pages/markdown-editor-components/markdown-editor-components';
+import { MarkdownComponent } from 'ngx-markdown';
 
 export  const markdownEditorRoute: Routes = [{
   path: '',
-  component: MarkdownEditorComponents
+  component: MarkdownComponent
 }]

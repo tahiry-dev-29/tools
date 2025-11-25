@@ -17,7 +17,7 @@ export const routes: Routes = [
       {
         title: 'markdown Editor',
         path: 'markdown-editor',
-        loadChildren: () => import('./features/markdown-editor/markdownEditor-routes').then((M) => M.markdownEditorRoute)
+        loadChildren: () => import('./features/editor/editor.routes').then((m) => m.editorRoute)
       },
     ]
   },

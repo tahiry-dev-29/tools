@@ -1,9 +1,9 @@
-import { Component, ElementRef, HostListener, signal, viewChild, inject, effect } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { Component, effect, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Project } from '../../core/models/project';
 import { ProjectListsService } from '../../core/services/projectLists-service';
 import { ScrollHide } from '../directives/scroll-hide';
 import { Dialog } from './dialog';
-import {Project} from '../../core/models/project';
 
 @Component({
   selector: 'app-nav-menu',
