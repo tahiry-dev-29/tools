@@ -17,7 +17,7 @@ export class ProjectListsService {
       id: '2',
       title: 'Markdown Editor',
       description: 'A real-time Markdown editor that allows users to write and preview Markdown syntax simultaneously. It supports common Markdown features, provides syntax highlighting, and enables easy export of content.',
-      imageUrl: 'https://placehold.co/400x250/1a202c/e2e8f0?text=Markdown%20Editor',
+      imageUrl: 'assets/images/markdown_editor.png',
       path: '/projects/markdown-editor',
     },
   ])
