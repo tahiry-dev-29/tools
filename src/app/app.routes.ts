@@ -19,6 +19,11 @@ export const routes: Routes = [
         path: 'markdown-editor',
         loadChildren: () => import('./features/editor/editor.routes').then((m) => m.editorRoute)
       },
+      {
+        title: 'Media Converter',
+        path: 'media-converter',
+        loadChildren: () => import('./features/media-converter/media-converter.routes').then((m) => m.mediaConverterRoutes)
+      },
     ]
   },
   {

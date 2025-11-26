@@ -25,7 +25,7 @@ export class ProjectListsService {
       title: 'Convertion files and images',
       description: 'A Convertion files and images application designed to help users convert files and images to different formats. It supports various options like length, character types (uppercase, lowercase, numbers, symbols), and exclusion of ambiguous characters.',
       imageUrl: 'http://placehold.co/600x400',
-      path: '/projects/convertion-files-and-images',
+      path: '/projects/media-converter',
     }
   ])
 
