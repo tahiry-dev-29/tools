@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal, viewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { FileNode } from '../../core/models/file-node.model';
@@ -51,10 +51,14 @@ import { ScrollSyncDirective } from './scroll-sync.directive';
           <span class="text-[10px] text-[var(--text-secondary)] opacity-50">{{ readingMode() ? 'Reading Mode' : 'Edit Mode' }}</span>
         </div>
 
-        <div class="flex flex-1 h-full min-w-0">
+        <div #resizeContainer class="flex flex-1 h-full min-w-0">
           <div 
-            [class]="readingMode() ? 'w-0' : 'w-1/2'" 
-            class="h-full flex flex-col border-r border-[var(--border-color)] relative transition-all duration-300 overflow-hidden">
+            [class.w-0]="readingMode()"
+            [class.pointer-events-none]="isResizing()"
+            [class.transition-all]="!isResizing()"
+            [class.duration-300]="!isResizing()"
+            [style.width.%]="readingMode() ? 0 : editorWidth()"
+            class="flex-none h-full flex flex-col border-r border-[var(--border-color)] relative overflow-hidden">
             <div class="bg-[var(--bg-tertiary)] px-4 py-2 text-xs text-[var(--text-secondary)] border-b border-[var(--border-color)] uppercase tracking-wider font-bold">
               Editor
             </div>
@@ -66,7 +70,20 @@ import { ScrollSyncDirective } from './scroll-sync.directive';
             ></ngx-monaco-editor>
           </div>
 
-          <div class="flex-1 h-full flex flex-col bg-[var(--bg-primary)] transition-all duration-300">
+
+           @if (!readingMode()) {
+          <div 
+            class="w-1 hover:bg-blue-500 cursor-col-resize flex-shrink-0 transition-colors z-10"
+            [class.bg-blue-500]="isResizing()"
+            (mousedown)="startResizing($event)">
+          </div>
+          }
+
+          <div 
+            [class.pointer-events-none]="isResizing()"
+            [class.transition-all]="!isResizing()"
+            [class.duration-300]="!isResizing()"
+            class="flex-1 h-full flex flex-col bg-[var(--bg-primary)]">
             <div class="bg-[var(--bg-tertiary)] px-4 py-2 text-xs text-[var(--text-secondary)] border-b border-[var(--border-color)] uppercase tracking-wider font-bold">
               Preview
             </div>
@@ -89,7 +106,12 @@ export class EditorLayoutComponent {
   readingMode = signal(false);
   scrollSyncEnabled = signal(true);
   
+
+  editorWidth = signal(50);
+  isResizing = signal(false);
+  
   previewComponent = viewChild(MarkdownPreviewComponent);
+  resizeContainer = viewChild<ElementRef>('resizeContainer');
   monacoEditor: any = null;
 
   editorOptions = {
@@ -113,6 +135,46 @@ export class EditorLayoutComponent {
   onEditorInit(editor: any): void {
     this.monacoEditor = editor;
     this.markdownCompletionService.registerCompletionProvider();
+  }
+
+
+  startResizing(event: MouseEvent): void {
+    event.preventDefault();
+    this.isResizing.set(true);
+    
+
+    window.addEventListener('mousemove', this.onMouseMove);
+    window.addEventListener('mouseup', this.stopResizing);
+  }
+
+  onMouseMove = (event: MouseEvent): void => {
+    if (!this.isResizing()) return;
+    
+    const container = this.resizeContainer();
+    if (!container) return;
+    
+    const rect = container.nativeElement.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const containerWidth = rect.width;
+    
+    let newWidth = (mouseX / containerWidth) * 100;
+    
+
+    newWidth = Math.max(5, Math.min(95, newWidth));
+    
+    this.editorWidth.set(newWidth);
+    
+
+    if (this.monacoEditor) {
+      this.monacoEditor.layout();
+    }
+  }
+
+  stopResizing = (): void => {
+    this.isResizing.set(false);
+
+    window.removeEventListener('mousemove', this.onMouseMove);
+    window.removeEventListener('mouseup', this.stopResizing);
   }
 
   toggleSync(): void {
