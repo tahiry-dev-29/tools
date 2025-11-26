@@ -1,0 +1,1 @@
+import{a as o}from"./chunk-75ZAFKBM.js";import"./chunk-AIJVZXQP.js";import"./chunk-ODPE2HZJ.js";import"./chunk-IWTN4FRU.js";import"./chunk-OM3NL6QK.js";import"./chunk-VKRCUX5N.js";var n=[{path:"",component:o,children:[{path:"markdown-editor",loadComponent:()=>import("./chunk-FBEKWZBH.js").then(t=>t.EditorLayoutComponent)}]}];export{n as editorRoute};
