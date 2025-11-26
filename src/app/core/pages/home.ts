@@ -8,7 +8,7 @@ import { Card } from '../../shared/components/card';
   imports: [Card],
   template: `
     <div class="min-h-screen text-white p-8 flex flex-col items-center justify-between">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto w-full">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto w-full items-start">
         @for (project of projects(); track project.id) {
           <app-card [project]="project" />
         }
