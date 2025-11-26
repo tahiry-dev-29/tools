@@ -1,19 +1,24 @@
-import { Component, signal, inject } from '@angular/core';
-import { MarkdownPreviewComponent } from './markdown-preview.component';
+import { CommonModule } from '@angular/common';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { FileNode } from '../../core/models/file-node.model';
 import { FileSystemService } from '../../core/services/file-system.service';
-import { CommonModule } from '@angular/common';
 import { FileTreeComponent } from './file-explorer/file-tree.component';
-import { MonacoEditorModule, NGX_MONACO_EDITOR_CONFIG } from 'ngx-monaco-editor-v2';
 import { MarkdownCompletionService } from './markdown-completion.service';
+import { MarkdownPreviewComponent } from './markdown-preview.component';
+import { ScrollSyncDirective } from './scroll-sync.directive';
 
 @Component({
   selector: 'app-editor-layout',
   standalone: true,
-  imports: [CommonModule, MarkdownPreviewComponent, FormsModule, FileTreeComponent, MonacoEditorModule],
+  imports: [CommonModule, MarkdownPreviewComponent, FormsModule, FileTreeComponent, MonacoEditorModule, ScrollSyncDirective],
   template: `
-    <div class="flex h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden font-sans">
+    <div class="flex h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden font-sans"
+         appScrollSync
+         [editor]="monacoEditor"
+         [preview]="previewComponent()?.getScrollElement()"
+         [enabled]="scrollSyncEnabled()">
     
       <div 
         [class]="sidebarCollapsed() ? 'w-0' : 'w-64'" 
@@ -35,6 +40,13 @@ import { MarkdownCompletionService } from './markdown-completion.service';
             [title]="readingMode() ? 'Show editor' : 'Reading mode'">
             <span class="material-icons text-sm">{{ readingMode() ? 'edit' : 'chrome_reader_mode' }}</span>
           </button>
+          <button 
+            (click)="toggleSync()" 
+            class="p-1 hover:bg-[var(--bg-secondary)] rounded transition-colors ml-2"
+            [class.text-blue-400]="scrollSyncEnabled()"
+            [title]="scrollSyncEnabled() ? 'Disable scroll sync' : 'Enable scroll sync'">
+            <span class="material-icons text-sm">sync</span>
+          </button>
           <div class="flex-1"></div>
           <span class="text-[10px] text-[var(--text-secondary)] opacity-50">{{ readingMode() ? 'Reading Mode' : 'Edit Mode' }}</span>
         </div>
@@ -50,7 +62,7 @@ import { MarkdownCompletionService } from './markdown-completion.service';
               class="flex-1 w-full"
               [options]="editorOptions"
               [(ngModel)]="rawContent"
-              (onInit)="onEditorInit()"
+              (onInit)="onEditorInit($event)"
             ></ngx-monaco-editor>
           </div>
 
@@ -71,10 +83,14 @@ export class EditorLayoutComponent {
   private fileSystemService = inject(FileSystemService);
   private markdownCompletionService = inject(MarkdownCompletionService);
   
-  rawContent = signal<string>('# Welcome to ObsidianWeb 2026\n\nOpen a folder to start editing files.');
+  rawContent = signal<string>('# Welcome to Markdown Editor Web 2026\n\nOpen a folder to start editing files.');
   currentFileHandle = signal<FileSystemFileHandle | null>(null);
   sidebarCollapsed = signal(false);
   readingMode = signal(false);
+  scrollSyncEnabled = signal(true);
+  
+  previewComponent = viewChild(MarkdownPreviewComponent);
+  monacoEditor: any = null;
 
   editorOptions = {
     theme: 'vs-dark',
@@ -94,8 +110,13 @@ export class EditorLayoutComponent {
     this.readingMode.update(v => !v);
   }
 
-  onEditorInit(): void {
+  onEditorInit(editor: any): void {
+    this.monacoEditor = editor;
     this.markdownCompletionService.registerCompletionProvider();
+  }
+
+  toggleSync(): void {
+    this.scrollSyncEnabled.update(v => !v);
   }
 
   async onFileSelected(node: FileNode): Promise<void> {

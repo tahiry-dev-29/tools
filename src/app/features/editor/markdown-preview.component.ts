@@ -1,4 +1,4 @@
-import { Component, input, effect, inject, ElementRef, afterNextRender } from '@angular/core';
+import { Component, input, output, effect, inject, ElementRef, afterNextRender, viewChild } from '@angular/core';
 import { MarkdownModule, MarkdownService } from 'ngx-markdown';
 
 @Component({
@@ -6,7 +6,7 @@ import { MarkdownModule, MarkdownService } from 'ngx-markdown';
   standalone: true,
   imports: [MarkdownModule],
   template: `
-    <div class="markdown-preview h-full overflow-y-auto">
+    <div #previewContainer class="markdown-preview h-full overflow-y-auto" (scroll)="onScroll()">
       <markdown
         [data]="content()"
         (ready)="onReady()">
@@ -19,6 +19,10 @@ import { MarkdownModule, MarkdownService } from 'ngx-markdown';
 })
 export class MarkdownPreviewComponent {
   content = input.required<string>();
+  scrolled = output<void>();
+  
+  previewContainer = viewChild<ElementRef>('previewContainer');
+  
   private elementRef = inject(ElementRef);
   private markdownService = inject(MarkdownService);
 
@@ -72,5 +76,14 @@ export class MarkdownPreviewComponent {
   }
 
   private attachInternalLinkListeners(): void {
+  }
+
+  onScroll(): void {
+    this.scrolled.emit();
+  }
+
+  getScrollElement(): HTMLElement | null {
+    const container = this.previewContainer();
+    return container ? container.nativeElement : null;
   }
 }
