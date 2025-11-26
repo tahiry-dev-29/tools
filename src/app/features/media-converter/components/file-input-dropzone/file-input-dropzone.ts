@@ -1,8 +1,11 @@
 import { Component, signal, output } from '@angular/core';
+import { FileTypeIcon, FileTypeIconComponent } from '../../../../shared/file-type-icon';
+
 
 @Component({
   selector: 'app-file-input-dropzone',
   standalone: true,
+  imports: [FileTypeIconComponent],
   template: `
     <div
       class="dropzone"
@@ -18,7 +21,7 @@ import { Component, signal, output } from '@angular/core';
         type="file"
         hidden
         (change)="onFileSelected($event)"
-        accept="image/*,video/*,.pdf,.docx,.txt"
+        accept="image/*,video/*,.pdf,.docx,.txt,.md"
       />
       
       @if (selectedFile()) {
@@ -35,7 +38,17 @@ import { Component, signal, output } from '@angular/core';
           <span class="icon">☁️</span>
           <p>Drag & Drop your file here</p>
           <p class="sub-text">or click to browse</p>
-          <p class="supported-types">Supports: Images, Video, PDF, DOCX, TXT</p>
+          <div class="supported-types">
+            <p>Supports:</p>
+            <div class="type-icons">
+              @for (type of supportedTypes; track type.id) {
+                <div class="type-icon" [title]="type.label">
+                  <app-file-type-icon [type]="type.icon" />
+                  <span>{{ type.label }}</span>
+                </div>
+              }
+            </div>
+          </div>
         </div>
       }
 
@@ -102,9 +115,42 @@ import { Component, signal, output } from '@angular/core';
     }
 
     .placeholder .supported-types {
-      font-size: 0.8rem;
-      margin-top: 1rem;
-      opacity: 0.7;
+      margin-top: 1.5rem;
+      width: 100%;
+    }
+
+    .placeholder .supported-types > p {
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .type-icons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .type-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .type-icon:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .type-icon span {
+      font-size: 0.7rem;
+      color: var(--text-secondary, #888);
+      font-weight: 500;
     }
 
     .file-info {
@@ -174,12 +220,22 @@ export class FileInputDropzoneComponent {
   selectedFile = signal<File | null>(null);
   error = signal<string | null>(null);
 
+  supportedTypes = [
+    { id: 'image', icon: 'image' as FileTypeIcon, label: 'Images' },
+    { id: 'video', icon: 'video' as FileTypeIcon, label: 'Video' },
+    { id: 'pdf', icon: 'pdf' as FileTypeIcon, label: 'PDF' },
+    { id: 'docx', icon: 'docx' as FileTypeIcon, label: 'DOCX' },
+    { id: 'txt', icon: 'txt' as FileTypeIcon, label: 'TXT' },
+    { id: 'markdown', icon: 'markdown' as FileTypeIcon, label: 'Markdown' }
+  ];
+
   private readonly ALLOWED_TYPES = [
     'image/png', 'image/jpeg', 'image/webp', 'image/gif',
     'video/mp4', 'video/webm',
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-    'text/plain'
+    'text/plain',
+    'text/markdown' // .md files
   ];
 
   onDragOver(event: DragEvent) {
@@ -232,7 +288,7 @@ export class FileInputDropzoneComponent {
     }
     // Fallback check for extensions if MIME type is empty or generic
     const extension = file.name.split('.').pop()?.toLowerCase();
-    const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'mp4', 'webm', 'pdf', 'docx', 'txt'];
+    const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'mp4', 'webm', 'pdf', 'docx', 'txt', 'md'];
     return extension ? allowedExtensions.includes(extension) : false;
   }
 

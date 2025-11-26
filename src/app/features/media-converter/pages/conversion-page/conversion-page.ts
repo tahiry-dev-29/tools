@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FileInputDropzoneComponent } from '../../components/file-input-dropzone/file-input-dropzone';
 import { FileConverterService } from '../../../../core/services/file-converter.service';
 import { FormsModule } from '@angular/forms';
+import { getAvailableFormats, getDefaultTargetFormat, getMimeType, detectFileType } from '../../../../core/config/conversion-config';
 
 @Component({
   selector: 'app-conversion-page',
@@ -22,14 +23,13 @@ import { FormsModule } from '@angular/forms';
           <div class="conversion-panel">
             <div class="file-summary">
               <h3>Selected: {{ selectedFile()?.name }}</h3>
-
               <p class="size">{{ formatSize(selectedFile()?.size ?? 0) }}</p>
             </div>
 
             <div class="options">
               <div class="option-group">
                 <label for="format">Output Format</label>
-                <select id="format" [(ngModel)]="targetFormat">
+                <select id="format" [ngModel]="targetFormat()" (ngModelChange)="targetFormat.set($event)">
                   @for (format of availableFormats(); track format) {
                     <option [value]="format">{{ format.toUpperCase() }}</option>
                   }
@@ -51,6 +51,13 @@ import { FormsModule } from '@angular/forms';
                 </div>
               }
             </div>
+
+            <!-- Warning Banner -->
+            @if (conversionWarning()) {
+              <div class="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex items-center gap-3 text-yellow-200">
+                <span>{{ conversionWarning() }}</span>
+              </div>
+            }
 
             <button 
               class="convert-btn" 
@@ -237,13 +244,10 @@ export class ConversionPage {
   });
 
   availableFormats = computed(() => {
-    if (this.isImageFile()) {
-      return ['png', 'jpeg', 'webp'];
-    }
-    if (this.isTextFile()) {
-      return ['pdf', 'docx'];
-    }
-    return [];
+    const file = this.selectedFile();
+    if (!file) return [];
+
+    return getAvailableFormats(file);
   });
 
   onFileSelected(file: File | null) {
@@ -253,13 +257,34 @@ export class ConversionPage {
     
     if (!file) return;
 
-    // Set default format based on type
-    if (file.type.startsWith('image/')) {
-      this.targetFormat.set('webp');
-    } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-      this.targetFormat.set('pdf');
+    // Use config-based default format detection
+    const defaultFormat = getDefaultTargetFormat(file);
+    if (defaultFormat) {
+      this.targetFormat.set(defaultFormat);
     }
   }
+
+  conversionWarning = computed(() => {
+    const source = this.selectedFile();
+    const target = this.targetFormat();
+    if (!source || !target) return null;
+    
+    const sourceType = detectFileType(source);
+    if (!sourceType) return null;
+    
+    const key = `${sourceType}->${target}`;
+    const warnings: Record<string, string> = {
+      'pdf->txt': '⚠️ La mise en forme sera perdue (texte brut uniquement)',
+      'docx->txt': '⚠️ La mise en forme sera perdue (texte brut uniquement)',
+      'txt->pdf': 'ℹ️ Création de PDF basique (texte brut)',
+      'txt->docx': 'ℹ️ Création de DOCX basique (texte brut)',
+      'video->gif': 'ℹ️ La conversion en GIF peut prendre du temps',
+      'video->mp4': 'ℹ️ Encodage H.264 en cours...',
+      'video->webm': 'ℹ️ Encodage VP9 en cours...'
+    };
+    
+    return warnings[key] || null;
+  });
 
   async convert() {
     const file = this.selectedFile();
@@ -269,28 +294,21 @@ export class ConversionPage {
     this.error.set(null);
 
     try {
-      let blob: Blob;
+      const result = await this.converter.convert(
+        file, 
+        this.targetFormat(),
+        { quality: this.quality() }
+      );
 
-      if (this.isImageFile()) {
-        blob = await this.converter.convertImage(
-          file, 
-          this.targetFormat() as 'png' | 'jpeg' | 'webp', 
-          this.quality()
-        );
-      } else if (this.isTextFile()) {
-        blob = await this.converter.convertDocument(
-          file,
-          this.targetFormat() as 'pdf' | 'docx'
-        );
-      } else {
-        throw new Error('Unsupported file type');
-      }
-      
+      const blob = result instanceof Blob 
+        ? result 
+        : new Blob([result], { type: getMimeType(this.targetFormat() as any) });
+
       const url = URL.createObjectURL(blob);
       this.convertedFileUrl.set(url);
     } catch (err) {
-      console.error('Conversion error:', err);
-      this.error.set('Conversion failed. Please try another file or format.');
+      console.error('Conversion failed:', err);
+      this.error.set(err instanceof Error ? err.message : 'Conversion failed');
     } finally {
       this.isConverting.set(false);
     }
