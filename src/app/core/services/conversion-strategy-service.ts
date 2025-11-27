@@ -3,9 +3,10 @@ import { FileType, SupportedFormat } from '../config/conversion-config';
 import { DocumentConverterService } from './converters/document-converter-service';
 import { VideoConverterService } from './converters/video-converter-service';
 import { AudioConverterService } from './converters/audio-converter-service';
-import { ImageProcessorService } from './processors/image-processor.service';
+import { ImageProcessorService } from './processors/image-processor-service';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
 import { jsPDF } from 'jspdf';
+import { CloudConvertService } from './converters/cloudconvert-service';
 
 /**
  * Conversion Strategy Interface
@@ -19,7 +20,6 @@ interface ConversionStrategy {
  * Strategy Registry - Maps conversion paths to handlers
  */
 type ConversionHandler = (file: File, options?: any) => Promise<Blob | string>;
-
 @Injectable({
   providedIn: 'root'
 })
@@ -31,6 +31,7 @@ export class ConversionStrategyService {
   private videoConverter = inject(VideoConverterService);
   private audioConverter = inject(AudioConverterService);
   private imageProcessor = inject(ImageProcessorService);
+  private cloudConvert = inject(CloudConvertService);
 
   constructor() {
     this.registerStrategies();
@@ -42,19 +43,80 @@ export class ConversionStrategyService {
    */
   private registerStrategies(): void {
     // === Document Conversions ===
+    // PDF Source
     this.register('pdf', 'txt', (f) => this.documentConverter.pdfToText(f).then(t => new Blob([t], { type: 'text/plain' })));
-    this.register('docx', 'txt', (f) => this.documentConverter.docxToText(f).then(t => new Blob([t], { type: 'text/plain' })));
     
+    // PDF -> DOCX (Hybrid Strategy)
+    this.register('pdf', 'docx', async (f) => {
+      if (this.cloudConvert.isConfigured()) {
+        try {
+          return await this.cloudConvert.convert(f, 'docx');
+        } catch (e) {
+          console.warn('CloudConvert failed, falling back to text extraction', e);
+        }
+      }
+      // Fallback: Text extraction
+      const text = await this.documentConverter.pdfToText(f);
+      const txtFile = new File([text], 'temp.txt');
+      return this.txtToDocx(txtFile);
+    });
+
+    this.register('pdf', 'html', async (f) => {
+      const text = await this.documentConverter.pdfToText(f);
+      return new Blob([`<html><body><pre>${text}</pre></body></html>`], { type: 'text/html' });
+    });
+    this.register('pdf', 'md', async (f) => {
+      const text = await this.documentConverter.pdfToText(f);
+      return new Blob([text], { type: 'text/markdown' });
+    });
+
+    // DOCX Source
+    this.register('docx', 'txt', (f) => this.documentConverter.docxToText(f).then(t => new Blob([t], { type: 'text/plain' })));
+    this.register('docx', 'pdf', async (f) => {
+      // Use HTML as intermediate format to preserve basic formatting
+      const html = await this.documentConverter.docxToHtml(f);
+      // Wrap in default style for better PDF look
+      const styledHtml = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          ${html}
+        </div>
+      `;
+      return this.documentConverter.htmlToPdf(styledHtml);
+    });
+    this.register('docx', 'html', async (f) => {
+      const html = await this.documentConverter.docxToHtml(f);
+      return new Blob([html], { type: 'text/html' });
+    });
+    this.register('docx', 'md', async (f) => {
+      // Convert to HTML first, then to Markdown to preserve structure
+      const html = await this.documentConverter.docxToHtml(f);
+      return this.documentConverter.htmlToMarkdown(html);
+    });
+    
+    // Markdown Source
     this.register('markdown', 'html', async (f) => {
       const text = await f.text();
       return this.documentConverter.markdownToHtml(text);
     });
     this.register('markdown', 'pdf', (f) => f.text().then(t => this.documentConverter.markdownToPdf(t)));
     this.register('markdown', 'txt', (f) => f.text().then(t => new Blob([t], { type: 'text/plain' })));
+    this.register('markdown', 'docx', async (f) => {
+      const text = await f.text();
+      const txtFile = new File([text], 'temp.txt');
+      return this.txtToDocx(txtFile);
+    });
     
+    // HTML Source
     this.register('html', 'pdf', (f) => f.text().then(t => this.documentConverter.htmlToPdf(t)));
     this.register('html', 'md', (f) => f.text().then(t => this.documentConverter.htmlToMarkdown(t)));
     this.register('html', 'txt', (f) => f.text().then(t => new Blob([t.replace(/<[^>]*>/g, '')], { type: 'text/plain' })));
+    this.register('html', 'docx', async (f) => {
+      const text = await f.text();
+      // Simple text extraction for now, could be improved
+      const plainText = text.replace(/<[^>]*>/g, '');
+      const txtFile = new File([plainText], 'temp.txt');
+      return this.txtToDocx(txtFile);
+    });
 
     // TXT Creations
     this.register('txt', 'pdf', this.txtToPdf.bind(this));

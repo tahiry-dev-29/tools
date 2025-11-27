@@ -7,7 +7,6 @@ import { PDFDocument } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 
-// Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 
 @Injectable({
@@ -15,8 +14,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 })
 export class DocumentConverterService {
   
-  // === HTML Conversions ===
-
   async htmlToPdf(htmlContent: string): Promise<Blob> {
     const container = document.createElement('div');
     container.innerHTML = htmlContent;
@@ -72,8 +69,6 @@ export class DocumentConverterService {
     return new Blob([markdown], { type: 'text/markdown' });
   }
 
-  // === Markdown Conversions ===
-
   async markdownToPdf(markdownContent: string): Promise<Blob> {
     const html = await marked(markdownContent);
     const styledHtml = `
@@ -89,8 +84,6 @@ export class DocumentConverterService {
     return new Blob([html], { type: 'text/html' });
   }
 
-  // === PDF Manipulations ===
-  
   async mergePdfs(files: File[]): Promise<Blob> {
     const mergedPdf = await PDFDocument.create();
 
@@ -104,8 +97,6 @@ export class DocumentConverterService {
     const savedPdf = await mergedPdf.save();
     return new Blob([savedPdf as any], { type: 'application/pdf' });
   }
-
-  // === Text Extraction ===
 
   async pdfToText(file: File): Promise<string> {
     const arrayBuffer = await file.arrayBuffer();
@@ -129,6 +120,12 @@ export class DocumentConverterService {
   async docxToText(file: File): Promise<string> {
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer as any });
+    return result.value;
+  }
+
+  async docxToHtml(file: File): Promise<string> {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer as any });
     return result.value;
   }
 }

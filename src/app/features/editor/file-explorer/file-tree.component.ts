@@ -1,6 +1,6 @@
 import { Component, inject, output } from '@angular/core';
 import { FileItemComponent } from './file-item.component';
-import { FileSystemService } from '../../../core/services/file-system.service';
+import { FileSystemService } from '../../../core/services/file-system-service';
 import { FileNode } from '../../../core/models/file-node.model';
 
 @Component({

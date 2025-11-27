@@ -87,7 +87,13 @@ export class VideoConverterService {
     await this.ffmpeg.writeFile(inputName, await fetchFile(file));
 
     if (format === 'mp3') {
-      await this.ffmpeg.exec(['-i', inputName, '-vn', '-acodec', 'libmp3lame', '-q:a', '2', outputName]);
+      await this.ffmpeg.exec([
+        '-i', inputName, 
+        '-vn', 
+        '-acodec', 'libmp3lame', 
+        '-b:a', '128k',
+        outputName
+      ]);
       return new Blob([await this.ffmpeg.readFile(outputName) as any], { type: 'audio/mpeg' });
     } else {
       await this.ffmpeg.exec(['-i', inputName, '-vn', '-acodec', 'pcm_s16le', outputName]);

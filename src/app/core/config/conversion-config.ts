@@ -11,10 +11,10 @@ export type SupportedFormat = 'pdf' | 'docx' | 'html' | 'md' | 'txt' | 'png' | '
  */
 export const CONVERSION_MATRIX: Record<FileType, SupportedFormat[]> = {
   // Real Document Conversions
-  pdf: ['txt'], // Only extraction is real client-side
-  docx: ['txt'], // Only extraction is real client-side
-  markdown: ['html', 'pdf', 'txt'],
-  html: ['pdf', 'md', 'txt'],
+  pdf: ['docx', 'txt', 'html', 'md'], // Text-based conversions
+  docx: ['pdf', 'txt', 'html', 'md'], // Text-based conversions
+  markdown: ['html', 'pdf', 'txt', 'docx'],
+  html: ['pdf', 'md', 'txt', 'docx'],
   txt: ['pdf', 'docx', 'html', 'md'],
   
   // Image Conversions

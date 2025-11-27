@@ -3,9 +3,9 @@ import { Component, inject, signal, viewChild, ElementRef } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { FileNode } from '../../core/models/file-node.model';
-import { FileSystemService } from '../../core/services/file-system.service';
+import { FileSystemService } from '../../core/services/file-system-service';
 import { FileTreeComponent } from './file-explorer/file-tree.component';
-import { MarkdownCompletionService } from './markdown-completion.service';
+import { MarkdownCompletionService } from './markdown-completion-service';
 import { MarkdownPreviewComponent } from './markdown-preview.component';
 import { ScrollSyncDirective } from './scroll-sync.directive';
 

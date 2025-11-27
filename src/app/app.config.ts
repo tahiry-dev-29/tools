@@ -5,10 +5,12 @@ import { NGX_MONACO_EDITOR_CONFIG } from 'ngx-monaco-editor-v2';
 import { ClipboardButtonComponent } from './features/editor/clipboard-button/clipboard-button';
 
 import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideHttpClient(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideMarkdown({
