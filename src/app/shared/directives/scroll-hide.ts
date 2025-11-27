@@ -9,10 +9,6 @@ export class ScrollHide {
 
   private lastScrollY = 0;
 
-  /**
-   * Listens for the window's scroll event.
-   * Determines if the host element should be visible based on scroll direction and position.
-   */
   @HostListener('window:scroll')
   onWindowScroll(): void {
     const currentScrollY = window.scrollY;

@@ -7,7 +7,7 @@ import { Component, input, output } from '@angular/core';
   template: `
     @if (isOpen()) {
       <div
-        class="fixed inset-0 bg-black/50 z-[999] flex"
+        class="fixed backdrop-blur bg-black/30 inset-0 z-[999] flex"
         [class]="containerClass()"
         (click)="closeDialog()"
       >
@@ -18,25 +18,9 @@ import { Component, input, output } from '@angular/core';
           aria-modal="true"
           [attr.aria-labelledby]="dialogTitleId"
         >
-          <div class="dialog-border-effect relative flex rounded-2xl p-[1.5px] overflow-hidden">
-            <div class="dialog-main-content flex flex-col bg-[#363636] rounded-2xl p-4 w-full">
-              <!-- Dialog Header -->
-              <div class="flex justify-between items-center mb-4">
-                <h2 [id]="dialogTitleId" class="text-lg font-semibold text-white">{{ title() }}</h2>
-                <button
-                  (click)="closeDialog()"
-                  class="text-gray-400 hover:text-white transition-colors duration-200"
-                  aria-label="Close dialog"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="text-white text-sm">
-                <ng-content></ng-content>
-              </div>
+          <div class="relative flex rounded-2xl p-[1.5px] overflow-hidden">
+            <div class="dialog-main-content flex flex-col rounded-2xl p-4 w-full">
+              <ng-content></ng-content>
             </div>
           </div>
         </div>
@@ -44,36 +28,6 @@ import { Component, input, output } from '@angular/core';
     }
   `,
   styles: `
-    .dialog-border-effect {
-      background: linear-gradient(
-        to bottom right,
-        #7e7e7e,
-        #363636,
-        #363636,
-        #363636,
-        #363636
-      );
-    }
-
-    .dialog-border-effect::after {
-      position: absolute;
-      content: "";
-      top: -10px;
-      left: -10px;
-      background: radial-gradient(
-        ellipse at center,
-        #ffffff,
-        rgba(255, 255, 255, 0.3),
-        rgba(255, 255, 255, 0.1),
-        rgba(0, 0, 0, 0),
-        rgba(0, 0, 0, 0),
-        rgba(0, 0, 0, 0),
-        rgba(0, 0, 0, 0)
-      );
-      filter: blur(1px);
-      z-index: 0;
-    }
-
     .dialog-main-content {
       position: relative;
       z-index: 1;

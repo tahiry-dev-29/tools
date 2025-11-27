@@ -19,7 +19,6 @@ export class ScrollSyncDirective implements OnDestroy {
       const previewElement = this.preview();
       const isEnabled = this.enabled();
 
-      // Clean up previous listeners
       this.disposeEditorListener();
 
       if (isEnabled && editorInstance && previewElement) {
@@ -29,15 +28,12 @@ export class ScrollSyncDirective implements OnDestroy {
   }
 
   private setupListeners(editor: any, preview: HTMLElement): void {
-    // Editor -> Preview
     this.editorDisposable = editor.onDidScrollChange((e: any) => {
       if (!this.isScrolling) {
         this.syncEditorToPreview(e.scrollTop, editor, preview);
       }
     });
 
-    // Preview -> Editor
-    // We need to bind the listener to the specific element instance
     const scrollHandler = () => {
       if (!this.isScrolling) {
         this.syncPreviewToEditor(preview, editor);
@@ -46,17 +42,6 @@ export class ScrollSyncDirective implements OnDestroy {
     
     preview.addEventListener('scroll', scrollHandler);
     
-    // Store cleanup for preview listener (we can't easily remove anonymous listener without reference, 
-    // but since we re-setup on changes, we should handle this carefully. 
-    // Actually, let's attach the handler to the element property to retrieve it later or use a map if needed.
-    // For simplicity with effect cleanup, we can just rely on the fact that effect runs when signals change.
-    // However, effect cleanup function is better.
-    
-    // Let's refine the effect to return a cleanup function if possible, but effect() doesn't return cleanup in that way.
-    // We'll manage cleanup manually in the effect body before setting up new ones.
-    
-    // Wait, adding event listener to preview element which might change is tricky.
-    // Let's store the current preview element and handler to remove it later.
     (this as any)._currentPreview = preview;
     (this as any)._currentHandler = scrollHandler;
   }

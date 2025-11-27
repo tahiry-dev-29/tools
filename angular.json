@@ -85,7 +85,17 @@
             ],
             "loader": {
               ".ttf": "file"
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "html2canvas",
+              "mammoth",
+              "buffer",
+              "pako",
+              "canvg",
+              "core-js",
+              "raf",
+              "rgbcolor"
+            ]
           },
           "configurations": {
             "production": {
