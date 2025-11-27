@@ -57,6 +57,11 @@
                 "glob": "**/*",
                 "input": "./node_modules/monaco-editor/min/vs",
                 "output": "vs"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@ffmpeg/core/dist/umd",
+                "output": "assets/ffmpeg"
               }
             ],
             "styles": [
@@ -113,7 +118,11 @@
               "buildTarget": "tools:build:production"
             },
             "development": {
-              "buildTarget": "tools:build:development"
+              "buildTarget": "tools:build:development",
+              "headers": {
+                "Cross-Origin-Opener-Policy": "same-origin",
+                "Cross-Origin-Embedder-Policy": "require-corp"
+              }
             }
           },
           "defaultConfiguration": "development"

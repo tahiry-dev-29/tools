@@ -23,11 +23,10 @@ export class CloudConvertService {
     };
   });
 
-  // Computed signals for UI
   quotaRemaining = computed(() => {
-    const data = this.userResource.value() as any;
-    if (!data) return null;
-    return data.data.credits;
+    const data = this.userResource.value();
+    if (!data || !this.apiKey()) return null;
+    return (data as any).data?.credits ?? null;
   });
 
   isConfigured = computed(() => !!this.apiKey());
@@ -55,7 +54,6 @@ export class CloudConvertService {
           operation: 'convert',
           input_format: file.name.split('.').pop(),
           output_format: targetFormat,
-          engine: 'office',
           input: ['import-1']
         },
         'export-1': {

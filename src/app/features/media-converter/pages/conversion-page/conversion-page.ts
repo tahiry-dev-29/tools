@@ -185,14 +185,29 @@ export class ConversionPage {
 
     try {
       // Use strategy service (which handles hybrid logic)
+      const fileType = detectFileType(file);
+      console.log('Debug: Detected file type:', fileType);
+      console.log('Debug: Target format:', this.targetFormat());
+      
       const result = await this.fileConverter.convert(file, this.targetFormat() as any);
       
       const blob = result instanceof Blob ? result : new Blob([result]);
       const url = URL.createObjectURL(blob);
       this.convertedFileUrl.set(url);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Conversion failed', error);
-      alert('La conversion a échoué. Vérifiez la console pour plus de détails.');
+      
+      let errorMessage = 'La conversion a échoué.';
+      
+      if (error.message?.includes('Can\'t find end of central directory') || error.message?.includes('jszip')) {
+        errorMessage = 'Le fichier semble corrompu ou n\'est pas un document valide.';
+      } else if (error.message?.includes('FFmpeg')) {
+        errorMessage = 'Erreur lors du chargement du convertisseur vidéo. Veuillez rafraîchir la page.';
+      } else if (error.message) {
+        errorMessage += ` ${error.message}`;
+      }
+      
+      alert(errorMessage);
     } finally {
       this.isConverting.set(false);
     }

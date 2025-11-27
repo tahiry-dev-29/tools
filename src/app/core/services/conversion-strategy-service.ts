@@ -125,8 +125,8 @@ export class ConversionStrategyService {
     this.register('txt', 'md', this.txtToMarkdown.bind(this));
 
     // === Video Conversions ===
-    this.register('video', 'mp4', (f) => this.videoConverter.convertWebmToMp4(f)); // Assuming WebM source for now, or generic
-    this.register('video', 'webm', (f) => this.videoConverter.convertMp4ToWebm(f)); // Assuming MP4 source
+    this.register('video', 'mp4', (f) => this.videoConverter.convertVideo(f, 'mp4'));
+    this.register('video', 'webm', (f) => this.videoConverter.convertVideo(f, 'webm'));
     this.register('video', 'gif', (f) => this.videoConverter.convertToGif(f));
     this.register('video', 'mp3', (f) => this.videoConverter.extractAudio(f, 'mp3'));
     this.register('video', 'wav', (f) => this.videoConverter.extractAudio(f, 'wav'));

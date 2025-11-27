@@ -1,35 +1,17 @@
-/**
- * Conversion Configuration - Single Source of Truth
- * Using Strategy Pattern to avoid repetitive code
- */
-
 export type FileType = 'pdf' | 'docx' | 'markdown' | 'html' | 'txt' | 'image' | 'video' | 'audio';
 export type SupportedFormat = 'pdf' | 'docx' | 'html' | 'md' | 'txt' | 'png' | 'jpeg' | 'webp' | 'mp4' | 'webm' | 'gif' | 'mp3' | 'wav';
 
-/**
- * Conversion Matrix - Defines all possible conversions
- */
 export const CONVERSION_MATRIX: Record<FileType, SupportedFormat[]> = {
-  // Real Document Conversions
-  pdf: ['docx', 'txt', 'html', 'md'], // Text-based conversions
-  docx: ['pdf', 'txt', 'html', 'md'], // Text-based conversions
+  pdf: ['docx', 'txt', 'html', 'md'],
+  docx: ['pdf', 'txt', 'html', 'md'],
   markdown: ['html', 'pdf', 'txt', 'docx'],
   html: ['pdf', 'md', 'txt', 'docx'],
   txt: ['pdf', 'docx', 'html', 'md'],
-  
-  // Image Conversions
   image: ['png', 'jpeg', 'webp'],
-  
-  // Video Conversions
   video: ['mp4', 'webm', 'gif', 'mp3', 'wav'],
-  
-  // Audio Conversions
   audio: ['mp3', 'wav']
 };
 
-/**
- * MIME Type Mapping
- */
 export const MIME_TYPES: Record<SupportedFormat, string> = {
   txt: 'text/plain',
   html: 'text/html',
@@ -46,9 +28,6 @@ export const MIME_TYPES: Record<SupportedFormat, string> = {
   wav: 'audio/wav'
 };
 
-/**
- * File Type Detection Rules
- */
 interface FileTypeRule {
   mimeTypes: string[];
   extensions: string[];
@@ -98,9 +77,6 @@ export const FILE_TYPE_RULES: FileTypeRule[] = [
   }
 ];
 
-/**
- * Default Target Format per File Type
- */
 export const DEFAULT_TARGET_FORMAT: Record<FileType, SupportedFormat> = {
   pdf: 'txt',
   docx: 'txt',
@@ -112,24 +88,18 @@ export const DEFAULT_TARGET_FORMAT: Record<FileType, SupportedFormat> = {
   audio: 'mp3'
 };
 
-/**
- * Detect file type from File object
- */
 export function detectFileType(file: File): FileType | null {
   const extension = file.name.split('.').pop()?.toLowerCase();
   
   for (const rule of FILE_TYPE_RULES) {
-    // Check MIME type
-    if (rule.mimeTypes.includes(file.type)) {
+    if (extension && rule.extensions.includes(extension)) {
       return rule.fileType;
     }
-    // Check extension
-    if (extension && rule.extensions.includes(extension)) {
+    if (rule.mimeTypes.includes(file.type)) {
       return rule.fileType;
     }
   }
   
-  // Fallback for video/audio if MIME type is generic or missing
   if (file.type.startsWith('video/')) return 'video';
   if (file.type.startsWith('audio/')) return 'audio';
   if (file.type.startsWith('image/')) return 'image';
@@ -137,25 +107,16 @@ export function detectFileType(file: File): FileType | null {
   return null;
 }
 
-/**
- * Get available conversion formats for a file
- */
 export function getAvailableFormats(file: File): SupportedFormat[] {
   const fileType = detectFileType(file);
   return fileType ? CONVERSION_MATRIX[fileType] : [];
 }
 
-/**
- * Get default target format for a file
- */
 export function getDefaultTargetFormat(file: File): SupportedFormat | null {
   const fileType = detectFileType(file);
   return fileType ? DEFAULT_TARGET_FORMAT[fileType] : null;
 }
 
-/**
- * Get MIME type for a format
- */
 export function getMimeType(format: SupportedFormat): string {
   return MIME_TYPES[format] || 'application/octet-stream';
 }
