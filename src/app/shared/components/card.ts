@@ -1,17 +1,16 @@
 import { Component, input, inject, signal } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { Project } from '../../core/models/project';
 
 @Component({
   selector: 'app-card',
-  imports: [NgOptimizedImage],
+  imports: [],
   template: `
     <div class="min-w-72 bg-white/10 backdrop-blur-xl rounded-xl shadow-2xl overflow-hidden
                 transform transition-all duration-150 hover:scale-105 hover:shadow-3xl
                 border border-white/20 hover:border-purple-500 flex flex-col h-full">
       <img
-        [ngSrc]="project().imageUrl"
+        [src]="project().imageUrl"
         alt="{{ project().title }}"
         class="w-full h-36 object-cover rounded-t-xl shrink-0"
         width="288" height="144" priority

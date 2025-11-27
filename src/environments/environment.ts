@@ -1,8 +1,9 @@
 export const environment = {
   production: false,
   cloudConvert: {
-    apiKey: '', // User needs to provide this
+    apiKey: '',
     sandboxMode: true,
     baseUrl: 'https://api.cloudconvert.com/v2'
-  }
+  },
+  maintenance: true
 };
